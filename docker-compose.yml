@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  plex:
+    image: plexinc/pms-docker
+    restart: always
+    ports:
+      - "32400:32400"
+    environment:
+      - PLEX_CLAIM="claim-YourClaimToken"
+      - ADVERTISE_IP="http://your-server-ip:32400/"
+    volumes:
+      - ${MEDIA_PATH}/config:/config
+      - ${MEDIA_PATH}/data:/data
+
+  sonarr:
+    image: linuxserver/sonarr
+    restart: always
+    ports:
+      - "8989:8989"  # Puertos expuestos para Sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ${MEDIA_PATH}/config/sonarr:/config
+      - ${MEDIA_PATH}/data:/tv
+
+  radarr:
+    image: linuxserver/radarr
+    restart: always
+    ports:
+      - "7878:7878"  # Puertos expuestos para Radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ${MEDIA_PATH}/config/radarr:/config
+      - ${MEDIA_PATH}/data:/movies
+
+  jackett:
+    image: linuxserver/jackett
+    restart: always
+    ports:
+      - "9117:9117"  # Puertos expuestos para Jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ${MEDIA_PATH}/config/jackett:/config
+
+  transmission:
+    image: linuxserver/transmission
+    restart: always
+    ports:
+      - "9091:9091"  # Puertos expuestos para Transmission
+      - "51413:51413"
+      - "51413:51413/udp"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Argentina/Buenos_Aires
+      - USER=username
+      - PASS=password
+    volumes:
+      - ${MEDIA_PATH}/config/transmission:/config
+      - ${MEDIA_PATH}/data:/downloads
+      - ${MEDIA_PATH}/torrents:/watch
